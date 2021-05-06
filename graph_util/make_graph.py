@@ -1,8 +1,10 @@
+from networkx.linalg.tests.test_modularity import np
 from pymongo import MongoClient
 import json
 import networkx as nx
 
 from webscrape_util.scrape_util import setup_mongo_client
+
 
 def make_graph(filepath, directed=True):
     """
@@ -29,6 +31,7 @@ def make_graph(filepath, directed=True):
 
     nx.write_gml(G, filepath)
 
+
 def make_fake_graph(G, filepath, num_followers=181507):
     """
     Create a graph for testing purposes with a macro-influencer ("SelenaGomez").
@@ -46,7 +49,7 @@ def make_fake_graph(G, filepath, num_followers=181507):
     G_fake.add_node("SelenaGomez")
 
     # Add n=181507 followers from follower base
-    selena_followers = np.random.choice(G_fake.nodes(), size=181507, replace=False)
+    selena_followers = np.random.choice(G_fake.nodes(), size=181507, replace=True) #Originally replace=False
     for follower in selena_followers:
         G_fake.add_edge(follower, "SelenaGomez")
 

@@ -3,6 +3,7 @@ import pandas as pd
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 from webscrape_util.scrape_util import load_json
 
+
 def reduce_by_critical_mass(G, crit_mass=5000):
     """
     Reduces graph by removing nodes that have less than a specific number of
@@ -24,7 +25,8 @@ def reduce_by_critical_mass(G, crit_mass=5000):
             G_reduced.remove_node(node)
     return G_reduced
 
-def calc_community_influence_score(G,returned='list'):
+
+def calc_community_influence_score(G, returned='list'):
     """
     Calculate and sort by community influence scores, which is eigenvector centrality
         for a graph (higher scores for higher eigenvector centralities).
@@ -40,10 +42,11 @@ def calc_community_influence_score(G,returned='list'):
 
     c = nx.eigenvector_centrality(G)
     if returned == 'list':
-        sorted_influence_score = (sorted(c.iteritems(), key=lambda x: x[1], reverse=True))
+        sorted_influence_score = (sorted(citems(), key=lambda x: x[1], reverse=True))
         return sorted_influence_score
     else:
         return c
+
 
 def calc_interaction_score(G, d, returned='list'):
     """
@@ -65,13 +68,14 @@ def calc_interaction_score(G, d, returned='list'):
             # Add Selena Gomez for test
             interaction_score['SelenaGomez'] = 0.05
         else:
-            interaction_score[user_id] = (1.0*d[user_id]['max_likes']/d[user_id]['num_follow'])
+            interaction_score[user_id] = (1.0 * d[user_id]['max_likes'] / d[user_id]['num_follow'])
 
     if returned == 'list':
-        sorted_interaction_score = (sorted(interaction_score.iteritems(), key=lambda x: x[1], reverse=True))
+        sorted_interaction_score = (sorted(interaction_scoreitems(), key=lambda x: x[1], reverse=True))
         return sorted_interaction_score
     else:
         return interaction_score
+
 
 def calc_authenticity_score(G, captions, returned='list'):
     """
@@ -108,10 +112,11 @@ def calc_authenticity_score(G, captions, returned='list'):
     caption_sentiment_means["SelenaGomez"] = 0.5
 
     if returned == 'list':
-        sorted_authenticity_score = (sorted(caption_sentiment_means.iteritems(), key=lambda x: x[1], reverse=True))
+        sorted_authenticity_score = (sorted(caption_sentiment_meansitems(), key=lambda x: x[1], reverse=True))
         return sorted_authenticity_score
     else:
         return caption_sentiment_means
+
 
 def normalize_values(d):
     """
@@ -123,14 +128,15 @@ def normalize_values(d):
     Returns:
         d_norm (dict): Dictionary with user ids and normalized scores.
     """
-    minimum = min(d.iteritems(), key= lambda x: x[1])[1]
-    maximum = max(d.iteritems(), key= lambda x: x[1])[1]
+    minimum = min(ditems(), key=lambda x: x[1])[1]
+    maximum = max(ditems(), key=lambda x: x[1])[1]
 
     d_norm = {}
     for user_id in d:
         d_norm[user_id] = (d[user_id] - minimum) / (maximum - minimum)
 
     return d_norm
+
 
 def calc_overall_score(influence_score, interaction_score, authenticity_score):
     """
@@ -154,17 +160,18 @@ def calc_overall_score(influence_score, interaction_score, authenticity_score):
 
     # Add normalized scores types to scores
     for user_id in users:
-        scores[user_id] = {'influence':None, 'interaction':None,
-                            'authenticity':None, 'final':None}
+        scores[user_id] = {'influence': None, 'interaction': None,
+                           'authenticity': None, 'final': None}
         scores[user_id]['influence'] = influence_normed[user_id]
         scores[user_id]['interaction'] = interaction_normed[user_id]
         scores[user_id]['authenticity'] = authenticity_normed[user_id]
 
         # Add overall score to scores
-        scores[user_id]['final'] = (0.6*influence_normed[user_id] +
-                            0.3*interaction_normed[user_id] +
-                            0.1*authenticity_normed[user_id])
+        scores[user_id]['final'] = (0.6 * influence_normed[user_id] +
+                                    0.3 * interaction_normed[user_id] +
+                                    0.1 * authenticity_normed[user_id])
     return scores
+
 
 def find_top_influencers(G, filepath_interactions, filepath_captions):
     """

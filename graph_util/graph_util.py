@@ -1,6 +1,7 @@
 import networkx as nx
 import numpy as np
 import matplotlib.pyplot as plt
+
 plt.style.use('ggplot')
 
 
@@ -25,18 +26,19 @@ def compare_centralities(G, top=5):
     p = nx.pagerank(G)
 
     centralities = [d, c, b, e, p]
-    names = ['degree','closeness','betweenness','eigenvector','page-rank']
+    names = ['degree', 'closeness', 'betweenness', 'eigenvector', 'page-rank']
 
     for i, centrality in enumerate(centralities):
-        sorted_centrality = (sorted(centrality.iteritems(), key=lambda x: x[1], reverse=True))[:top]
-        print names[i]
-        print sorted_centrality
-        print "\n"
+        sorted_centrality = (sorted(centrality.items(), key=lambda x: x[1], reverse=True))[:top]
+        print(names[i])
+        print(sorted_centrality)
+        print("\n")
 
         for pair in sorted_centrality:
             most_important.add(pair[0])
 
     return most_important
+
 
 def plot_centralities(G, x_axis='eigenvector', y_axis='degree'):
     """
@@ -58,20 +60,21 @@ def plot_centralities(G, x_axis='eigenvector', y_axis='degree'):
     # Create lists of centralities matched by id
     x = []
     y = []
-    for k,v in y_dict.iteritems():
+    for k, v in y_dict.items():
         y.append(v)
         x.append(x_dict[k])
 
-    x_line = np.linspace(0,max(max(x), max(y)),10)
+    x_line = np.linspace(0, max(max(x), max(y)), 10)
     y_line = x_line
 
     fig, ax = plt.subplots()
     ax.plot(x, y, 'bo', alpha=0.5)
-    ax.plot(x_line,y_line,'r-')
+    ax.plot(x_line, y_line, 'r-')
     ax.set_title("Degree Centrality v. Eigenvector Centrality")
     ax.set_xlabel("Eigenvector Centrality")
     ax.set_ylabel("Degree Centrality")
     fig.show()
+
 
 def sorted_centrality(G, centrality='degree'):
     """
@@ -94,11 +97,11 @@ def sorted_centrality(G, centrality='degree'):
     elif centrality == 'eigenvector':
         c = nx.eigenvector_centrality(G)
     elif centrality == 'pagerank':
-        p = nx.pagerank(G)
+        c = nx.pagerank(G)
     else:
         return "Must choose degree, closeness, betweenness, eigenvector, or pagerank centrality"
 
-    sorted_centrality = (sorted(c.iteritems(), key=lambda x: x[1], reverse=True))
+    sorted_centrality = (sorted(c.items(), key=lambda x: x[1], reverse=True))
 
     return sorted_centrality
 
@@ -118,11 +121,11 @@ def likes_graph(G, d):
     """
     gw = nx.DiGraph()
 
-    for influencer,follower in G.edges_iter(nbunch=d.keys()):
+    for influencer, follower in G.edges_iter(nbunch=d.keys()):
         if influencer != 'SelenaGomez':
             # If another influencer likes an influencer's post, it is weighted
             if follower in d[influencer]['likes']:
-                gw.add_weighted_edges_from([(follower,influencer,2)])
+                gw.add_weighted_edges_from([(follower, influencer, 2)])
             else:
-                gw.add_weighted_edges_from([(follower,influencer,1)])
+                gw.add_weighted_edges_from([(follower, influencer, 1)])
     return gw

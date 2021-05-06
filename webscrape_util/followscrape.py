@@ -15,6 +15,7 @@ from scrape_util import (
     write_text,
     selenium_instagram_login)
 
+
 def find_next_influencer(filepath_influencers, filepath_scrapedinfluencers):
     """
     Finds the next influencer for followers scraping.
@@ -35,6 +36,7 @@ def find_next_influencer(filepath_influencers, filepath_scrapedinfluencers):
         next_influencer = influencers_list[0]
     return next_influencer
 
+
 def load_json_from_html(driver):
     """Click on raw data and store it in json format.
 
@@ -44,12 +46,13 @@ def load_json_from_html(driver):
     Returns:
         data_as_json (dict): data from raw-data tab as json.
     """
-    time.sleep(np.random.uniform(1,2))
+    time.sleep(np.random.uniform(1, 2))
     # Clicks on raw-data tab
     driver.find_element_by_id('tab-1').click()
     data = driver.find_element_by_css_selector('pre.data')
     data_as_json = json.loads(data.text)
     return data_as_json
+
 
 def insert_data(data_as_json, influencer_id, collection):
     """Insert records into Mongo database.
@@ -59,7 +62,8 @@ def insert_data(data_as_json, influencer_id, collection):
         collection (pymongo.Collection): Collection object for record insertion.
     """
     followers = data_as_json['data']['user']['edge_followed_by']['edges']
-    collection.insert_one({'id':influencer_id,'follow_pack': followers})
+    collection.insert_one({'id': influencer_id, 'follow_pack': followers})
+
 
 def get_page_info(data_as_json):
     """Find and save page_info from json.
@@ -73,6 +77,7 @@ def get_page_info(data_as_json):
     """
     page_info = data_as_json['data']['user']['edge_followed_by']['page_info']
     return page_info
+
 
 def followscrape(num_requests):
     """
@@ -101,7 +106,7 @@ def followscrape(num_requests):
         insert_data(data_as_json, influencer_id, collection)
         page_info = get_page_info(data_as_json)
         page_counter = 1
-        print "Finished scraping {} pages for influencer {}".format(page_counter, influencer_id)
+        print("Finished scraping {} pages for influencer {}".format(page_counter, influencer_id))
 
         # Keep searching while followers still exist
         while page_info['has_next_page']:
@@ -110,15 +115,14 @@ def followscrape(num_requests):
             insert_data(data_as_json, influencer_id, collection)
             page_info = get_page_info(data_as_json)
             page_counter += 1
-            print "Finished scraping {} pages for influencer {}".format(page_counter, influencer_id)
-            time.sleep(np.random.uniform(7,10))
-
+            print("Finished scraping {} pages for influencer {}".format(page_counter, influencer_id))
+            time.sleep(np.random.uniform(7, 10))
 
         write_text(influencer_id, 'data/scraped_influencers.txt')
-        time.sleep(np.random.uniform(7,10))
-        print "Finished scraping {} influencers of {}".format(i+1, num_requests)
+        time.sleep(np.random.uniform(7, 10))
+        print("Finished scraping {} influencers of {}".format(i + 1, num_requests))
 
     client.close()
 
-    print "\n Finished scraping {} influencers' followers".format(num_requests)
+    print("\n Finished scraping {} influencers' followers".format(num_requests))
     return None

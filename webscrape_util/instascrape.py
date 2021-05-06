@@ -8,6 +8,7 @@ from pymongo import MongoClient
 
 from scrape_util import setup_mongo_client, load_last_line, add_new_line
 
+
 def insert_edge(response, collection):
     """Insert records into Mongo database.
 
@@ -18,6 +19,7 @@ def insert_edge(response, collection):
     edges = response.json()['data']['hashtag']['edge_hashtag_to_media']['edges']
     for edge in edges:
         collection.insert_one(edge)
+
 
 def get_page_info(response):
     """Find and save page_info from response json.
@@ -31,6 +33,7 @@ def get_page_info(response):
     """
     page_info = response.json()['data']['hashtag']['edge_hashtag_to_media']['page_info']
     return page_info
+
 
 def instascrape(page_info_filepath, num_requests):
     """
@@ -51,25 +54,24 @@ def instascrape(page_info_filepath, num_requests):
 
     base_url_search = "https://www.instagram.com/graphql/query/?query_id=17875800862117404&variables={{%22tag_name%22:%22womenwhoclimb%22,%22first%22:{},%22after%22:%22{}%22}}"
 
-
     for i in range(num_requests):
 
         if page_info['has_next_page']:
-            response = requests.get(base_url_search.format('12',str(page_info['end_cursor'])))
+            response = requests.get(base_url_search.format('12', str(page_info['end_cursor'])))
 
             if response.status_code == 200:
                 insert_edge(response, collection)
                 page_info = get_page_info(response)
-                add_new_line(page_info,page_info_filepath)
+                add_new_line(page_info, page_info_filepath)
 
             else:
-                print "Status Code = " + str(response.status_code)
+                print("Status Code = " + str(response.status_code))
                 return None
 
-        time.sleep(np.random.uniform(15,45))
-        print "Finished scraping {} pages of {}".format(i+1, num_requests)
+        time.sleep(np.random.uniform(15, 45))
+        print("Finished scraping {} pages of {}".format(i + 1, num_requests))
 
     client.close()
 
-    print "\n Finished scraping {} pages of 12 influencers each".format(num_requests)
+    print("\n Finished scraping {} pages of 12 influencers each".format(num_requests))
     return None
